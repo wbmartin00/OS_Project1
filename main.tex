@@ -1,0 +1,156 @@
+\documentclass[12pt]{article}
+
+
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{float}
+
+
+\lstset{
+    language=[Sharp]C,
+    basicstyle=\ttfamily\small,
+    numbers=left,
+    numberstyle=\tiny,
+    stepnumber=1,
+    numbersep=5pt,
+    frame=single,
+    breaklines=true,
+    captionpos=b,
+    tabsize=4,
+    showstringspaces=false,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{gray}\itshape,
+    stringstyle=\color{red},
+}
+
+\title{Multi-threaded Kitchen Simulation and IPC Using Pipes}
+\author{Will Martin\\ Course Section: CS 3502\\ NETID: wmarti83}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\newpage
+
+\section{Introduction}
+This report documents the implementation of a multi-threaded kitchen simulation and an inter-process communication (IPC) mechanism using pipes. The project consists of two parts:
+\begin{itemize}
+    \item \textbf{Project A:} A simulation where multiple chef threads interact with shared resources (ingredients and ovens), demonstrating threading, synchronization, and deadlock detection.
+    \item \textbf{Project B:} A simple IPC demonstration where one process (the producer) sends data to another (the consumer) via pipes.
+\end{itemize}
+The objectives of this project were to implement thread management, apply synchronization mechanisms, handle inter-process communication, and overcome real-world challenges during environment setup and testing.
+
+\section{Implementation Details}
+\subsection{Threading and Synchronization}
+Project A simulates a kitchen environment where chefs (threads) access shared resources. The implementation features:
+\begin{itemize}
+    \item \textbf{Thread Management:} Each chef is implemented as a separate thread. The program creates multiple threads to simulate concurrent activity.
+    \item \textbf{Synchronization Mechanisms:} 
+    \begin{itemize}
+        \item \textbf{Mutexes:} Used to protect access to shared resources such as ingredients and ovens. Two mutexes are maintained (one for ingredients and one for ovens) to ensure proper synchronization.
+        \item \textbf{Fixed Locking Order:} In safe mode, threads acquire locks in a consistent order to prevent deadlock.
+    \end{itemize}
+    \item \textbf{Deadlock Detection and Recovery:} A dedicated thread monitors the progress of chef threads. If no progress is detected for more than 10 seconds, the system assumes a deadlock has occurred and triggers a recovery process that interrupts the stalled threads and resets the locks.
+\end{itemize}
+
+\subsection{Inter-process Communication (IPC)}
+Project B demonstrates IPC using pipes:
+\begin{itemize}
+    \item The \textbf{Producer} process writes sample data (e.g., strings) to the standard output.
+    \item The \textbf{Consumer} process reads the data from standard input, processes it (in this case, converting text to uppercase), and outputs the result.
+\end{itemize}
+
+\subsection{Code Snippets}
+Below is an excerpt from Project A illustrating the deadlock scenario and resource management:
+\begin{lstlisting}[caption={Deadlock Scenario in Project A}, label={lst:deadlock}]
+public void DeadlockScenario(int chefNumber)
+{
+    if (chefNumber % 2 == 0)
+    {
+        // Chef A: Lock ingredients first, then oven
+        ingredientMutex.WaitOne();
+        Console.WriteLine($"Chef {chefNumber} locked ingredients, waiting for an oven...");
+        Thread.Sleep(500);
+        ovenMutex.WaitOne();
+        Console.WriteLine($"Chef {chefNumber} got both locks! Cooking...");
+        Thread.Sleep(2000);
+        ovenMutex.ReleaseMutex();
+        ingredientMutex.ReleaseMutex();
+    }
+    else
+    {
+        // Chef B: Lock oven first, then ingredients
+        ovenMutex.WaitOne();
+        Console.WriteLine($"Chef {chefNumber} locked an oven, waiting for ingredients...");
+        Thread.Sleep(500);
+        ingredientMutex.WaitOne();
+        Console.WriteLine($"Chef {chefNumber} got both locks! Cooking...");
+        Thread.Sleep(2000);
+        ingredientMutex.ReleaseMutex();
+        ovenMutex.ReleaseMutex();
+    }
+}
+\end{lstlisting}
+
+And an excerpt from Project B for the IPC mechanism:
+\begin{lstlisting}[caption={Producer Code in Project B}, label={lst:producer}]
+using System;
+
+namespace Producer
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            string[] data = { "Hello", "This is a test", "IPC via pipes", "C# is awesome!" };
+            foreach (var line in data)
+            {
+                Console.WriteLine(line);
+            }
+        }
+    }
+}
+\end{lstlisting}
+
+\section{Environment Setup and Tool Usage}
+The development environment was set up on a Ubuntu virtual machine (VM) running on Parallels, hosted on a MacBook M2 Pro (ARM architecture). During the setup:
+\begin{itemize}
+    \item I installed the necessary compilers and runtime environments for C\# and .NET.
+    \item I used Visual Studio Code as the integrated development environment (IDE).
+    \item Some challenges arose due to ARM compatibility issues with VS Code and .NET, which required extra configuration steps.
+\end{itemize}
+
+\section{Challenges and Solutions}
+The project presented several challenges:
+\begin{itemize}
+    \item \textbf{Environment Setup:} Setting up Ubuntu on a VM via Parallels on an ARM-based MacBook M2 Pro was particularly challenging. I encountered issues with installing VS Code and .NET on the ARM architecture. I had to seek assistance from ChatGPT \cite{ChatGPT}, as well as online tutorials \cite{UbuntuARM} which provided helpful guidance to resolve these installation hiccups.
+    \item \textbf{Deadlock Detection:} Initially, I attempted to analyze thread states to detect deadlocks. However, thread states proved too dynamic—they changed even when threads were simply waiting for a shared resource (in this case, the oven) \cite{CSharpThreading}. To address this, I switched to a timing-based approach. If no progress was made by a thread within 10 seconds, it was considered deadlocked, prompting the system to initiate deadlock recovery.
+\end{itemize}
+
+\section{Results and Outcomes}
+The final implementation successfully demonstrates:
+\begin{itemize}
+    \item Effective multi-threading with proper synchronization.
+    \item A working deadlock detection and recovery mechanism.
+    \item A simple yet functional IPC mechanism using pipes.
+\end{itemize}
+Performance testing indicated that the timing-based deadlock detection method was more reliable than state analysis under dynamic conditions. Limitations remain in scaling the simulation further, and future work could focus on refining resource management and exploring alternative IPC methods.
+
+\section{Reflection and Learning}
+This project was a valuable learning experience. Key takeaways include:
+\begin{itemize}
+    \item A deeper understanding of threading concepts, mutex usage, and the challenges associated with deadlock detection.
+    \item Hands-on experience in setting up a development environment on non-traditional architectures (ARM-based MacBook).
+    \item The importance of flexibility in problem-solving—when one approach (thread state analysis) proved unreliable, I pivoted to a timing-based solution.
+\end{itemize}
+
+\bibliographystyle{IEEEtran} 
+\bibliography{references}
+
+\end{document}
