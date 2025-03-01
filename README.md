@@ -20,6 +20,8 @@ This repository contains two projects designed to demonstrate key concepts in mu
 ---
 
 ## Repository Structure
+
+```
 ├── ProjectA
 │   ├── Program.cs          # Main entry point for the kitchen simulation
 │   ├── Kitchen.cs          # Handles shared resources and thread management
@@ -32,7 +34,7 @@ This repository contains two projects designed to demonstrate key concepts in mu
 │   ├── Report.tex          # LaTeX source for the final project report
 │   └── Report.pdf          # Compiled report in PDF format
 └── README.md               # Documentation and project instructions
-
+```
 ---
 
 ## Prerequisites
