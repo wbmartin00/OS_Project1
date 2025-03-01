@@ -1,0 +1,14 @@
+/home/parallels/Desktop/Consumer/bin/Debug/net8.0/Consumer
+/home/parallels/Desktop/Consumer/bin/Debug/net8.0/Consumer.deps.json
+/home/parallels/Desktop/Consumer/bin/Debug/net8.0/Consumer.runtimeconfig.json
+/home/parallels/Desktop/Consumer/bin/Debug/net8.0/Consumer.dll
+/home/parallels/Desktop/Consumer/bin/Debug/net8.0/Consumer.pdb
+/home/parallels/Desktop/Consumer/obj/Debug/net8.0/Consumer.GeneratedMSBuildEditorConfig.editorconfig
+/home/parallels/Desktop/Consumer/obj/Debug/net8.0/Consumer.AssemblyInfoInputs.cache
+/home/parallels/Desktop/Consumer/obj/Debug/net8.0/Consumer.AssemblyInfo.cs
+/home/parallels/Desktop/Consumer/obj/Debug/net8.0/Consumer.csproj.CoreCompileInputs.cache
+/home/parallels/Desktop/Consumer/obj/Debug/net8.0/Consumer.dll
+/home/parallels/Desktop/Consumer/obj/Debug/net8.0/refint/Consumer.dll
+/home/parallels/Desktop/Consumer/obj/Debug/net8.0/Consumer.pdb
+/home/parallels/Desktop/Consumer/obj/Debug/net8.0/Consumer.genruntimeconfig.cache
+/home/parallels/Desktop/Consumer/obj/Debug/net8.0/ref/Consumer.dll
