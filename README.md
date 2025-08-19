@@ -98,4 +98,4 @@ Set the bool variable sendLargeFile (line 10 of the Producer/Program.cs file) to
 
 ## License
 
-KSU Student? idk.
+MIT
